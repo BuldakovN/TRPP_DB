@@ -3,7 +3,15 @@ import time
 import os.path
 
 class DAO:
+    
     def __init__(self, filename='test.db'):
+        """
+        #Класс управдения базой данных
+
+        Конструктор на вход получает:
+
+            filename (по умолчанию test.db) -- название файла с базой данных
+        """
         self.__filename = filename
         if not os.path.exists(self.__filename):
             f = open(self.__filename, 'w')
@@ -15,18 +23,55 @@ class DAO:
 
     # очищение файла
     def deleteAll(self):
+        """
+        Очищение файлов
+        """
         f = open(self.__filename, 'w')
         f.close()
 
-
+    # создание таблиц
     def createTables(self):
-        # таблица студентов
-        # Id -- id студента
-        # FName -- имя студента
-        # LName -- фамилия студента
-        # VkId -- id для вк (0 если отсутствует)
-        # TelegrammId -- id для телеграмма (0 если отсутствует)
-        # GroupName -- название группы
+        '''
+        ##Таблица студентов
+        
+        Id -- id студента
+
+        FName -- имя студента
+
+        LName -- фамилия студента
+
+        VkId -- id для вк (0 если отсутствует)
+
+        TelegrammId -- id для телеграмма (0 если отсутствует)
+
+        GroupName -- название группы
+
+        ---
+        ##Таблица сообщений для телеграмма
+
+        Id -- id сообщения
+
+        Text -- текст сообщения
+
+        Date -- дата сообщения
+
+        IdTarget -- id адресата из таблицы студентов
+
+        Sent -- флаг отправленного сообщения (0 -- не отправлено, 1 -- отправленно)
+
+        ---
+        ##Таблица сообщений для ВК
+
+        Id -- id сообщения
+
+        Text -- текст сообщения
+
+        Date -- дата сообщения
+
+        IdTarget -- id адресата из таблицы студентов
+
+        Sent -- флаг отправленного сообщения (0 -- не отправлено, 1 -- отправленно)
+        '''
         self.__cursor.execute("""
             CREATE TABLE IF NOT EXISTS students(
             Id INT PRIMARY KEY,
@@ -35,12 +80,6 @@ class DAO:
             VkId TEXT,
             TelegrammId TEXT,
             GroupName TEXT);""")
-        # таблица сообщений для телеграмма
-        # Id -- id сообщения
-        # Text -- текст сообщения
-        # Date -- дата сообщения
-        # IdTarget -- id адресата из таблицы студентов
-        # Sent -- флаг отправленного сообщения (0 -- не отправлено, 1 -- отправленно)
         self.__cursor.execute("""
             CREATE TABLE IF NOT EXISTS messagesTelegramm(
             Id INT PRIMARY KEY, 
@@ -48,12 +87,6 @@ class DAO:
             Date TEXT,
             IdTarget INT, 
             Sent INT);""")
-        # таблица сообщений для ВК
-        # Id -- id сообщения
-        # Text -- текст сообщения
-        # Date -- дата сообщения
-        # IdTarget -- id адресата из таблицы студентов
-        # Sent -- флаг отправленного сообщения (0 -- не отправлено, 1 -- отправленно)
         self.__cursor.execute("""
             CREATE TABLE IF NOT EXISTS messagesVk(
             Id INT PRIMARY KEY,
@@ -64,8 +97,11 @@ class DAO:
         self.__conn.commit()
 
 
-    # добавление нового сообщения в таблицу messageVk
+    
     def addToMessagesVk(self, Text, IdTarget):
+        """
+        Добавить новое сообшения для ВК
+        """
         self.__cursor.execute("SELECT * FROM messagesVk")
         Id = len(self.__cursor.fetchall())
         message = (Id, Text, time.asctime(), IdTarget, 0)
@@ -73,8 +109,12 @@ class DAO:
                               message)
         self.__conn.commit()
 
+
     # добавление нового сообщения в таблицу messagesTelegramm
-    def addToMessagesVk(self, Text, IdTarget):
+    def addToMessagesTelegramm(self, Text, IdTarget):
+        '''
+        Добавить новое сообшения для Телеграмма
+        '''
         self.__cursor.execute("SELECT * FROM messagesTelegramm")
         Id = len(self.__cursor.fetchall())
         message = (Id, Text, time.asctime(), IdTarget, 0)
@@ -87,6 +127,7 @@ class DAO:
     def addToStudents(self, FName, LName, VkId, TelegrammId, Group):
         self.__cursor.execute("SELECT * FROM students")
         Id = len(self.__cursor.fetchall())
+        Group = Group.upper()
         student = (Id, FName, LName, VkId, TelegrammId, Group)
         self.__cursor.execute("INSERT INTO students VALUES(?, ?, ?, ?, ?, ?);",
                               student)
@@ -102,7 +143,7 @@ class DAO:
 
 
     # отметить сообщение из телеграмма как отправленное
-    def markAsSentVK(self, MessageId):
+    def markAsSentTelegramm(self, MessageId):
         self.__cursor.execute(
             'UPDATE messagesTelegramm SET Sent = 1 WHERE Id = ?;',
             (MessageId,))
@@ -146,6 +187,13 @@ class DAO:
     # получить студента по id
     def getStudentById(self, Id):
         self.__cursor.execute("SELECT * FROM students WHERE Id = ?", (Id,))
+        return self.__cursor.fetchone()
+
+
+    # получить студентов по группе
+    def getStudentsByGroup(self, group):
+        group = group.upper()
+        self.__cursor.execute("SELECT * FROM students WHERE GroupName = ?", (Id,))
         return self.__cursor.fetchone()
 
 
