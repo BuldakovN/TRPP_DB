@@ -41,7 +41,7 @@ def addStudent():
         new_student.append(request.form['TelegrammId'])
         new_student.append(request.form['Group'])
     except KeyError as e:
-        return 'KeyError: ' + e
+        return 'KeyError: ' + str(e)
 
     dao = DAO(db_name)
     dao.addToStudents(*new_student)
@@ -72,7 +72,7 @@ def addMessage():
         to_vk = request.form['ToVk']
         to_tg = request.form['ToTelegramm']
     except KeyError as e:
-        return 'KeyError: ' + e
+        return 'KeyError: ' + str(e)
     dao = DAO(db_name)
     if to_vk:
         dao.addToMessagesVk(*new_message)
@@ -224,7 +224,7 @@ def sendMessage():
         platform = request.form['Platform']
         Id = request.form['Id']
     except KeyError as e:
-        return 'KeyError: ' + e
+        return 'KeyError: ' + str(e)
     dao = DAO(db_name)
     if platform == "Vk":
         dao.markAsSentVK(Id)
@@ -291,7 +291,7 @@ def getStudentById():
     try:
         Id = request.form['Id']
     except KeyError as e:
-        return 'KeyError: ' + e
+        return 'KeyError: ' + str(e)
     dao = DAO(db_name)
     student = dao.getStudentById(Id)
     response["Id"] = student[0]
