@@ -194,7 +194,7 @@ class DAO:
     def getStudentsByGroup(self, group):
         group = group.upper()
         self.__cursor.execute("SELECT * FROM students WHERE GroupName = ?", (Id,))
-        return self.__cursor.fetchone()
+        return self.__cursor.fetchall()
 
 
     # получить сообщение по id для ВК
@@ -207,6 +207,26 @@ class DAO:
     def getMessageTelegrammById(self, Id):
         self.__cursor.execute("SELECT * FROM messagesTelegramm WHERE Id = ?", (Id,))
         return self.__cursor.fetchone()
+
+
+    # добавить id телеграмма к студенту
+    def addTelegrammId(self, FName, LName, Group, TelegrammId, addToStudents=True):
+        self.__cursor.execute("SELECT * FROM students WHERE FName = ? "
+                              +"AND LName = ? AND GroupName = ?", (FName, LName, Group)
+        )
+        student = self.__cursor.fetchone()
+        if student is None and not addToStudents:
+            return 'Студент не найден'
+        if student is None and addToStudents:
+            self.addToStudents(FName, LName, 0, TelegrammId, Group)
+            self.__conn.commit()  
+            return 'Студент добавлен'
+        self.__cursor.execute('UPDATE students SET TelegrammId = ? WHERE Id = ?;',
+                              (TelegrammId, student[0])
+        )
+        self.__conn.commit()
+        return 'success'
+
 
 
     def __del__(self):

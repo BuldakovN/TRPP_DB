@@ -11,6 +11,7 @@ from dao import DAO
 import json
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 
 db_name = 'students.db'
 
@@ -261,7 +262,7 @@ def getStudents():
         d["FName"] = s[1]
         d["LName"] = s[2]
         d["VkId"] = s[3]
-        d["TelegramId"] = s[4]
+        d["TelegrammId"] = s[4]
         d["Group"] = s[5]
         response.append(d.copy())
     return json.dumps(response)
@@ -301,7 +302,38 @@ def getStudentById():
     response["TelegrammId"] = student[4]
     response["Group"] = student[5]
     return response
-    
+
+
+@app.route('/addTelegrammIdByName', methods=['POST'])
+def addTelegrammIdByName():
+    """
+    Добавить студенту id телеграмма по его имени
+    Если такого студента нет в БД, то добавление не производится
+
+    На вход поступает POST-запрос на адрес **/addTelegrammIdByName** с json-объектов вида
+
+        {
+            FName: имя студента
+            LName: фамилия студента
+            Group: группа студента
+            TelegrammId: id телеграмма
+        }
+
+    В случае успешного обновления возвращает **success**
+
+    В случае ненахождения студента в таблице возвращает сообщение **Студент не найден**
+    """
+    try:
+        FName = request.form['FName']
+        LName = request.form['LName']
+        TelegrammId = request.form['TelegrammId']
+        Group = request.form['Group']
+    except KeyError as e:
+        return 'KeyError: ' + str(e)
+
+    dao = DAO(db_name)
+    result = dao.addTelegrammId(FName, LName, Group, TelegrammId, addToStudents=False)
+    return result
 
 if __name__ == "__main__":
     app.run()
