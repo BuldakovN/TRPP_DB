@@ -75,9 +75,11 @@ def addMessage():
     except KeyError as e:
         return 'KeyError: ' + str(e)
     dao = DAO(db_name)
-    if to_vk:
+    if to_vk == "1":
+        print("В ВК")
         dao.addToMessagesVk(*new_message)
-    if to_tg:
+    if to_tg == "1":
+        print("В телеграмм")
         dao.addToMessagesTelegramm(*new_message)
     return 'success'
 

@@ -105,7 +105,7 @@ class DAO:
         self.__cursor.execute("SELECT * FROM messagesVk")
         Id = len(self.__cursor.fetchall())
         message = (Id, Text, time.asctime(), IdTarget, 0)
-        self.__cursor.execute("INSERT INTO messages VALUES(?, ?, ?, ?, ?);",
+        self.__cursor.execute("INSERT INTO messagesVk VALUES(?, ?, ?, ?, ?);",
                               message)
         self.__conn.commit()
 
@@ -118,7 +118,7 @@ class DAO:
         self.__cursor.execute("SELECT * FROM messagesTelegramm")
         Id = len(self.__cursor.fetchall())
         message = (Id, Text, time.asctime(), IdTarget, 0)
-        self.__cursor.execute("INSERT INTO messages VALUES(?, ?, ?, ?, ?);",
+        self.__cursor.execute("INSERT INTO messagesTelegramm VALUES(?, ?, ?, ?, ?);",
                               message)
         self.__conn.commit()
 
