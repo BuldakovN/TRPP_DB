@@ -296,6 +296,7 @@ def getStudentById():
         return 'KeyError: ' + str(e)
     dao = DAO(db_name)
     student = dao.getStudentById(Id)
+    response = {}
     response["Id"] = student[0]
     response["FName"] = student[1]
     response["LName"] = student[2]
