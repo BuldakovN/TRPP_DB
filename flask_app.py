@@ -77,9 +77,8 @@ def addMessage():
     dao = DAO(db_name)
     if to_vk:
         dao.addToMessagesVk(*new_message)
-    elif to_tg:
+    if to_tg:
         dao.addToMessagesTelegramm(*new_message)
-    dao.addToMessages(*new_message)
     return 'success'
 
 
